@@ -1,3 +1,4 @@
+import sys
 import ctypes
 import pathlib
 import time
@@ -36,7 +37,25 @@ ORDINAIS = ["primeiro", "segundo", "terceiro", "quarto", "quinto"]
 
 
 def obter_tipo_misterio():
-    dia = datetime.datetime.today().weekday()
+    dia = None
+    # Verifica se o usuário passou um dia da semana por argumento de linha de comando
+    if len(sys.argv) > 1:
+        dia_arg = sys.argv[1].lower()
+        mapa_dias = {
+            "segunda": 0, "terça": 1, "terca": 1,
+            "quarta": 2, "quinta": 3, "sexta": 4,
+            "sábado": 5, "sabado": 5, "domingo": 6
+        }
+        for chave, valor in mapa_dias.items():
+            if dia_arg.startswith(chave):
+                dia = valor
+                print(f"[Teste] Simulando o dia da semana: {chave.capitalize()}")
+                break
+
+    # Se não foi passado argumento ou foi inválido, pega o dia atual
+    if dia is None:
+        dia = datetime.datetime.today().weekday()
+
     if dia in [0, 5]: # Segunda, Sábado
         return "Gozosos"
     elif dia in [1, 4]: # Terça, Sexta
