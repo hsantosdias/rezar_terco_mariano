@@ -1,55 +1,52 @@
-def rezar(oracao, quantidade=1, intencao=""):
-    """Função auxiliar para imprimir a oração e a intenção."""
-    if intencao:
-        print(f"[{intencao}] ", end="")
-    print(f"Rezando: {oracao} ({quantidade}x)")
+import ctypes
+import pathlib
+import time
+
+AUDIO_DIR = pathlib.Path(__file__).parent / "audios"
+
+winmm = ctypes.windll.winmm
+
+
+def play(filename):
+    path = str(AUDIO_DIR / filename)
+    alias = "audio"
+    winmm.mciSendStringW(f'open "{path}" type mpegvideo alias {alias}', None, 0, 0)
+    winmm.mciSendStringW(f"play {alias} wait", None, 0, 0)
+    winmm.mciSendStringW(f"close {alias}", None, 0, 0)
+
+
+ORDINAIS = ["primeiro", "segundo", "terceiro", "quarto", "quinto"]
+
 
 def rezar_terco_mariano():
-    print("=== INÍCIO DO TERÇO ===")
-    rezar("Sinal da Cruz")
-    rezar("Oferecimento do Terço")
-    rezar("Credo", intencao="Segurando a Cruz")
-    
-    # Contas iniciais após a cruz
-    rezar("Pai-Nosso", intencao="Primeira conta grande")
-    
-    print("\n-- Homenagem à Santíssima Trindade --")
-    intencoes_iniciais = ["Deus Pai", "Deus Filho", "Deus Espírito Santo"]
-    for intencao in intencoes_iniciais:
-        rezar("Ave-Maria", intencao=f"Em honra a {intencao}")
-        
-    rezar("Glória ao Pai")
+    play("inicio_santo_terco.mp3")
+    play("Credo.mp3")
+    play("Pai_Nosso.mp3")
 
-    print("\n=== CONTINUAÇÃO: OS 5 MISTÉRIOS ===")
-    # Loop principal que percorre as 5 dezenas (Mistérios)
-    for misterio in range(1, 6):
-        print(f"\n--- Contemplando o {misterio}º Mistério ---")
-        rezar("Anúncio do Mistério e Meditação")
-        
-        rezar("Pai-Nosso", intencao="Conta grande do mistério")
-        
-        # Loop aninhado para as 10 Ave-Marias de cada dezena
-        print("Iniciando a dezena...")
-        for conta_pequena in range(1, 11):
-            rezar("Ave-Maria", intencao=f"Conta pequena {conta_pequena}/10")
-            
-        rezar("Glória ao Pai", intencao="Fim da dezena")
-        rezar("Jaculatórias", intencao="'Ó meu Jesus...', 'Ó Maria concebida...'")
+    for _ in range(3):
+        play("Ave_Maria.mp3")
 
-    print("\n=== FINALIZAÇÃO DO TERÇO ===")
-    rezar("Agradecimento")
-    rezar("Salve Rainha")
-    rezar("Ladainha de Nossa Senhora")
-    
-    print("\n-- Orações pelo Romano Pontífice e pela Igreja --")
-    # Orações finais (1 Pai-Nosso, 1 Ave-Maria, 1 Glória)
-    rezar("Pai-Nosso")
-    rezar("Ave-Maria")
-    rezar("Glória ao Pai")
-    
-    rezar("Saudação Final à Virgem Maria")
-    rezar("Sinal da Cruz", intencao="Encerramento")
-    print("=== TERÇO CONCLUÍDO ===")
+    play("Glória_ao_Pai.mp3")
+    time.sleep(0.5)
 
-# Executando o "código" do Terço
-rezar_terco_mariano()
+    for i in range(5):
+        play(f"anuncio_{ORDINAIS[i]}_misterio.mp3")
+        play("Pai_Nosso.mp3")
+
+        for _ in range(10):
+            play("Ave_Maria.mp3")
+
+        play("Glória_ao_Pai.mp3")
+        play("Jaculatórias.mp3")
+        play("rogai_por_nos.mp3")
+
+    play("salve_rainha.mp3")
+    play("Ladainha de Nossa Senhora.mp3")
+    play("Pai_Nosso.mp3")
+    play("Ave_Maria.mp3")
+    play("Glória_ao_Pai.mp3")
+    play("fim_do_santo_terco.mp3")
+
+
+if __name__ == "__main__":
+    rezar_terco_mariano()
